@@ -3,17 +3,16 @@ export interface ConfigValue {
 }
 
 export interface EditorValue {
-  id: string[]
+  id: string
+}
+
+export interface MultiEditorValue {
+  ids: string[]
 }
 
 export interface EditorMetadataValue {
   parameterConfiguration: ConfigValue;
   settings: SettingsValue;
-}
-
-export interface SettingsValue {
-  projectAlias: string;
-  apiKey: string;
 }
 
 export interface SettingsValue {
