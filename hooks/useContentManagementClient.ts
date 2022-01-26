@@ -1,9 +1,9 @@
 import { Client, ClientOptions } from '@umbraco/headless-client';
-import { EditorMetadataValue } from '../types/types';
+import { ProjectSettings } from '../types/types';
 
-export const useContentManagementClient = (metadata: EditorMetadataValue) => {
+export const useContentManagementClient = (settings: ProjectSettings) => {
   return new Client({
-    projectAlias: metadata.settings.projectAlias,
-    apiKey: metadata.settings.apiKey
+    projectAlias: settings.projectAlias,
+    apiKey: settings.apiKey
   } as ClientOptions);
 };

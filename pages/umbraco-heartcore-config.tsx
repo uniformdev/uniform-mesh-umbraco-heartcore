@@ -1,45 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { useUniformMeshLocation } from '@uniformdev/mesh-sdk-react';
-import { ConfigValue, EditorMetadataValue } from '../types/types';
+import React from 'react';
+import { Callout, LoadingIndicator, useUniformMeshLocation, Icons } from '@uniformdev/mesh-sdk-react';
+import { useAsync } from 'react-use';
+import {
+  CanvasItemSelectorConfigValue,
+  CanvasItemSelectorConfigMetadataValue,
+  ProjectSettings,
+  LinkedSource,
+  TemplateMap,
+} from '../types/types';
+import { LinkedSourceSelect } from '../components/LinkedSourceSelect';
 import { useContentManagementClient } from '../hooks/useContentManagementClient';
-import { LoadingOverlay } from '../components/LoadingOverlay';
-import Checkmark from 'icons/Checkmark';
+import { ContentTypeBase } from '@umbraco/headless-client';
 
 export default function HeartcoreConfig() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [contentTypes, setContentTypes] = useState<any[]>([]);
-  const { value, setValue, metadata } = useUniformMeshLocation<ConfigValue, EditorMetadataValue>();
-  const client = useContentManagementClient(metadata);
+  const {
+    value: config,
+    setValue: setConfig,
+    metadata,
+  } = useUniformMeshLocation<CanvasItemSelectorConfigValue, CanvasItemSelectorConfigMetadataValue>();
 
-  const handleMenuItemClick = (contentType: string) => {
-    const newValue: ConfigValue = { ...(value || {}) };
-    newValue[contentType] = newValue[contentType] ? undefined : contentType;
-
-    setValue(newValue);
+  const handleAllowedTemplatesSetValue = (allowedTemplates: TemplateMap | undefined) => {
+    setConfig({ ...config, allowedTemplates });
   };
 
-  useEffect(() => {
-    (async () => {
-      const result = await client.management.contentType.all();
-      setContentTypes(result);
-      setLoading(false);
-    })();
-  }, []);
+  const handleLinkedSourceSelect = (value: LinkedSource) => {
+    setConfig({
+      ...config,
+      source: value.id,
+    });
+  };
+
+  const selectedLinkedSource = metadata.settings.linkedSources?.find((ls) => ls.id === config?.source);
+  const projectSettings = selectedLinkedSource?.project;
+
+  return (
+    <>
+      {!metadata.settings.linkedSources ? (
+        <Callout type="error">
+          It appears the Heartcore integration is not configured. Please visit the &quot;Settings &gt;
+          Heartcore&quot; page to provide information for connecting to Heartcore.
+        </Callout>
+      ) : (
+        <LinkedSourceSelect
+          selectedLinkId={config?.source}
+          onLinkSelect={handleLinkedSourceSelect}
+          linkedSources={metadata.settings.linkedSources}
+        />
+      )}
+
+      {config?.source && projectSettings ? (
+        <TemplateSelector
+          projectSettings={projectSettings}
+          setValue={handleAllowedTemplatesSetValue}
+          value={config.allowedTemplates}
+        />
+      ) : null}
+    </>
+  );
+}
+
+interface TemplateSelectorProps {
+  setValue: (value: TemplateMap) => void;
+  value: TemplateMap | undefined;
+  projectSettings: ProjectSettings;
+}
+
+function TemplateSelector({ projectSettings, value, setValue }: TemplateSelectorProps) {
+  const {
+    loading,
+    error,
+    value: templates,
+  } = useAsync(async () => {
+    if (!projectSettings) {
+      return;
+    }
+
+    const client = useContentManagementClient(projectSettings);
+
+    const result = await client.management.contentType.all();
+
+    return result;
+  }, [projectSettings]);
+
+  const handleMenuItemClick = (template: ContentTypeBase) => {
+    setValue({
+      ...value,
+      id: template.alias,
+    });
+  };
 
   return (
     <div className="relative">
-      <label className="uniform-input-label">Allowed Content Types</label>
-      <LoadingOverlay isActive={loading} />
-      {Array.isArray(contentTypes) ? (
+      <label className="uniform-input-label">Allowed Templates</label>
+      {loading ? <LoadingIndicator /> : null}
+      {Array.isArray(templates) ? (
         <div
           className="overflow-y-auto p-2 bg-gray-100 border-t border-b border-gray-300 space-y-2 max-h-96"
           data-test-id="content-type-selector"
         >
-          {contentTypes.length === 0 ? (
-            <h3 className="text-sm font-medium mb-2">No content types were found.</h3>
+          {templates.length === 0 ? (
+            <Callout type="caution">
+              No templates were found for project {projectSettings?.projectAlias}
+            </Callout>
           ) : (
-            contentTypes.map((contentType, index) => {
-              const active = Boolean(value ? value[contentType.alias] : false);
+            templates.map((template, index) => {
+              const active = Boolean(value ?? false);
               return (
                 <div
                   key={index}
@@ -49,11 +114,11 @@ export default function HeartcoreConfig() {
                 >
                   <button
                     type="button"
-                    onClick={() => handleMenuItemClick(contentType.alias)}
+                    onClick={() => handleMenuItemClick(template)}
                     className="flex items-center justify-between w-full outline-none focus:outline-none"
                   >
-                    <span>{contentType.name}</span>
-                    {active ? <Checkmark className="block h-6 w-6 text-green-500" /> : null}
+                    <span>{template.alias}</span>
+                    {active ? <Icons.Checkmark className="block h-6 w-6 text-green-500" /> : null}
                   </button>
                 </div>
               );
@@ -61,6 +126,7 @@ export default function HeartcoreConfig() {
           )}
         </div>
       ) : null}
+      {error ? <Callout type="error">{error.message}</Callout> : null}
     </div>
   );
 }

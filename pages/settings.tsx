@@ -1,68 +1,115 @@
-import React from 'react';
-import { Formik, Form, Field, FormikHelpers } from 'formik';
-import { useUniformMeshLocation } from '@uniformdev/mesh-sdk-react';
-import { LoadingOverlay } from '../components/LoadingOverlay';
-import { SettingsValue } from '../types/types';
+import React, { useEffect, useState } from 'react';
+import { useUniformMeshLocation, Input, Button, Callout, LoadingOverlay } from '@uniformdev/mesh-sdk-react';
+import { ProjectSettings, SettingsValue } from '../types/types';
 
 export default function Settings() {
   const { value, setValue } = useUniformMeshLocation<SettingsValue>();
 
-  const handleSettingsChange = async (settings: SettingsValue) => {
-    await setValue(settings);
+  const handleSettingsChange = async (settings: ProjectSettings) => {
+    await setValue({
+      linkedSources: [
+        {
+          id: 'default',
+          project: settings,
+        },
+      ],
+    });
   };
 
   return (
     <>
-      <h3>Settings page goes here yo.</h3>
-      {value ? <SettingsInner settings={value} onSettingsChange={handleSettingsChange} /> : null}
+      <h3 className="main-heading">Heartcore settings</h3>
+      <SettingsInner settings={value?.linkedSources?.[0].project} onSettingsChange={handleSettingsChange} />
     </>
   );
 }
+
+type FormState = Partial<ProjectSettings> & { isSubmitting: boolean; saveSuccess: boolean };
 
 const SettingsInner = ({
   settings,
   onSettingsChange,
 }: {
-  settings: SettingsValue;
-  onSettingsChange: (formValues: SettingsValue) => Promise<void>;
+  settings: ProjectSettings | undefined;
+  onSettingsChange: (settings: ProjectSettings) => Promise<void>;
 }) => {
-  const handleSubmit = async (
-    formValues: SettingsValue,
-    helpers: FormikHelpers<SettingsValue & { generalError?: string }>
-  ) => {
+  const [formState, setFormState] = useState<FormState>({
+    apiKey: '',
+    projectAlias: '',
+    isSubmitting: false,
+    saveSuccess: false,
+  });
+  const [error, setError] = useState<Error | undefined>();
+
+  useEffect(() => {
+    setFormState((prev) => {
+      return {
+        ...prev,
+        apiKey: settings?.apiKey || '',
+        projectAlias: settings?.projectAlias || '',
+      };
+    });
+  }, [settings]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+        saveSuccess: false,
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!formState.apiKey || !formState.projectAlias) {
+      setError(new Error('Be sure to provide a Project Id, Project URL, API Username, and API Key'));
+      return;
+    }
+
+    setFormState((prev) => ({
+      ...prev,
+      isSubmitting: true,
+      saveSuccess: false,
+    }));
+
     try {
-      await onSettingsChange(formValues);
+      await onSettingsChange({
+        apiKey: formState.apiKey!,
+        projectAlias: formState.projectAlias!,
+      });
+
+      setFormState((prev) => ({
+        ...prev,
+        isSubmitting: false,
+        saveSuccess: true,
+      }));
     } catch (err) {
-      helpers.setErrors({ generalError: err.message });
+      setError(err);
+      setFormState((prev) => ({
+        ...prev,
+        isSubmitting: false,
+        saveSuccess: false,
+      }));
     }
   };
 
   return (
-    <Formik<SettingsValue & { generalError?: string }>
-      initialValues={settings || { meaning: '', other: '' }}
-      onSubmit={handleSubmit}
-    >
-      {({ errors, isSubmitting }) => {
-        return (
-          <Form className="space-y-4 relative">
-            <LoadingOverlay isActive={isSubmitting} />
-            {errors.generalError ? <div>{errors.generalError}</div> : null}
-            <div className="uniform-input-container">
-              <label htmlFor="projectAlias" className="uniform-input-label">
-                Project Alias
-              </label>
-              <Field name="projectAlias" className="uniform-input uniform-input-text" />
-            </div>
-            <div className="uniform-input-container">
-              <label htmlFor="apiKey" className="uniform-input-label">
-                API Key
-              </label>
-              <Field name="apiKey" className="uniform-input uniform-input-text" />
-            </div>
-            <input type="submit" value="Save" className="btn-secondary" disabled={isSubmitting} />
-          </Form>
-        );
-      }}
-    </Formik>
+    <div className="space-y-4 relative">
+      <LoadingOverlay isActive={formState.isSubmitting} />
+      {error ? <Callout type="error">{error.message}</Callout> : null}
+      {formState.saveSuccess ? <Callout type="success">Settings were saved successfully</Callout> : null}
+
+      <Input
+        name="projectAlias"
+        label="Project Alias"
+        onChange={handleInputChange}
+        value={formState.projectAlias}
+      />
+      <Input name="apiKey" label="API Key" onChange={handleInputChange} value={formState.apiKey} />
+      <Button type="submit" buttonType="secondary" disabled={formState.isSubmitting} onClick={handleSubmit}>
+        Save
+      </Button>
+    </div>
   );
 };
