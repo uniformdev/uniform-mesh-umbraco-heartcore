@@ -1,20 +1,20 @@
-export type TemplateMap = {
-  id: string
+export interface ContentType {
+  alias: string;
+  name: string
+}
+export type ContentTypeMap = {
+  [key: string]: ContentType | undefined;
 };
 
 export type CanvasItemSelectorConfigValue =
   | {
-      allowedTemplates?: TemplateMap;
-      source?: LinkedSource['id'];
-    }
+    allowedContentTypes?: ContentTypeMap;
+    source?: LinkedSource['id'];
+  }
   | undefined;
 
 export interface ConfigValue {
   [key: string]: string | undefined | null;
-}
-
-export interface EditorValue {
-  id: string
 }
 
 export interface EditorMetadataValue {
@@ -29,13 +29,13 @@ export interface ProjectSettings {
 
 export interface CanvasItemSelectorConfigMetadataValue {
   settings: SettingsValue;
-  /** Uniform project id, not GatherContent project id */
+  /** Uniform project id */
   projectId: string;
 }
 
 export interface CanvasItemSelectorEditorValue {
   source: string | undefined;
-  itemIds: number[] | undefined;
+  id: string;
 }
 
 export interface CanvasItemSelectorEditorMetadataValue {
@@ -52,4 +52,12 @@ export interface SettingsValue {
 export interface LinkedSource {
   id: string;
   project: ProjectSettings;
+}
+export interface ContentItem {
+  contentTypeAlias: string,
+  createDate: string,
+  id: string,
+  name: string,
+  updateDate: string,
+  currentVersionState: string
 }

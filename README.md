@@ -23,12 +23,6 @@ Add an external integration in the Uniform dashboard and use the following for t
           "displayName": "Umbraco Heartcore",
           "configureUrl": "/umbraco-heartcore-config",
           "editorUrl": "/umbraco-heartcore-editor"
-        },
-        {
-          "type": "multiheartcore",
-          "editorUrl": "/umbraco-heartcore-multi-editor",
-          "displayName": "Multi Umbraco Heartcore",
-          "configureUrl": "/umbraco-heartcore-config"
         }
       ]
     }

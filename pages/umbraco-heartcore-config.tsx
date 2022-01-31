@@ -6,11 +6,11 @@ import {
   CanvasItemSelectorConfigMetadataValue,
   ProjectSettings,
   LinkedSource,
-  TemplateMap,
+  ContentTypeMap,
 } from '../types/types';
 import { LinkedSourceSelect } from '../components/LinkedSourceSelect';
-import { useContentManagementClient } from '../hooks/useContentManagementClient';
-import { ContentTypeBase } from '@umbraco/headless-client';
+import { getContentManagementClient } from '../lib/getContentManagementClient';
+import { ContentTypeBase, ContentTypeBaseGroup } from '@umbraco/headless-client';
 
 export default function HeartcoreConfig() {
   const {
@@ -19,8 +19,8 @@ export default function HeartcoreConfig() {
     metadata,
   } = useUniformMeshLocation<CanvasItemSelectorConfigValue, CanvasItemSelectorConfigMetadataValue>();
 
-  const handleAllowedTemplatesSetValue = (allowedTemplates: TemplateMap | undefined) => {
-    setConfig({ ...config, allowedTemplates });
+  const handleAllowedContentTypesSetValue = (allowedContentTypes: ContentTypeMap | undefined) => {
+    setConfig({ ...config, allowedContentTypes });
   };
 
   const handleLinkedSourceSelect = (value: LinkedSource) => {
@@ -49,62 +49,72 @@ export default function HeartcoreConfig() {
       )}
 
       {config?.source && projectSettings ? (
-        <TemplateSelector
+        <ContentTypeSelector
           projectSettings={projectSettings}
-          setValue={handleAllowedTemplatesSetValue}
-          value={config.allowedTemplates}
+          setValue={handleAllowedContentTypesSetValue}
+          value={config.allowedContentTypes}
         />
       ) : null}
     </>
   );
 }
 
-interface TemplateSelectorProps {
-  setValue: (value: TemplateMap) => void;
-  value: TemplateMap | undefined;
+interface ContentTypeSelectorProps {
+  setValue: (value: ContentTypeMap) => void;
+  value: ContentTypeMap | undefined;
   projectSettings: ProjectSettings;
 }
 
-function TemplateSelector({ projectSettings, value, setValue }: TemplateSelectorProps) {
+function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSelectorProps) {
   const {
     loading,
     error,
-    value: templates,
+    value: contentTypes,
   } = useAsync(async () => {
     if (!projectSettings) {
       return;
     }
 
-    const client = useContentManagementClient(projectSettings);
+    //eslint-disable-next-line
+    const client = getContentManagementClient(projectSettings);
 
     const result = await client.management.contentType.all();
 
-    return result;
+    return result as (ContentTypeBase & ContentTypeBaseGroup)[];
   }, [projectSettings]);
 
-  const handleMenuItemClick = (template: ContentTypeBase) => {
-    setValue({
-      ...value,
-      id: template.alias,
-    });
+  const handleMenuItemClick = (contentType: ContentTypeBase & ContentTypeBaseGroup) => {
+    // If the clicked content type id already exists in the provided state value,
+    // set the content type id value to 'undefined' in the stored object.
+    // This makes updating the state value less complex.
+    // note: we can't mutate `value` directly as it is read-only/frozen, so spread the existing
+    // value into a new object if it exists.
+    const allowedContentTypes = {
+      ...(value || {}),
+    };
+    allowedContentTypes[contentType.alias] = allowedContentTypes[contentType.alias]
+      ? undefined
+      : { alias: contentType.alias, name: contentType.name };
+
+    setValue(allowedContentTypes);
   };
 
   return (
     <div className="relative">
-      <label className="uniform-input-label">Allowed Templates</label>
+      <label className="uniform-input-label">Allowed ContentTypes</label>
       {loading ? <LoadingIndicator /> : null}
-      {Array.isArray(templates) ? (
+      {Array.isArray(contentTypes) ? (
         <div
           className="overflow-y-auto p-2 bg-gray-100 border-t border-b border-gray-300 space-y-2 max-h-96"
           data-test-id="content-type-selector"
         >
-          {templates.length === 0 ? (
+          {contentTypes.length === 0 ? (
             <Callout type="caution">
-              No templates were found for project {projectSettings?.projectAlias}
+              No content types were found for project {projectSettings?.projectAlias}
             </Callout>
           ) : (
-            templates.map((template, index) => {
-              const active = Boolean(value ?? false);
+            contentTypes.map((contentType, index) => {
+              const active = Boolean(value ? value[contentType.alias] : false);
               return (
                 <div
                   key={index}
@@ -114,10 +124,10 @@ function TemplateSelector({ projectSettings, value, setValue }: TemplateSelector
                 >
                   <button
                     type="button"
-                    onClick={() => handleMenuItemClick(template)}
+                    onClick={() => handleMenuItemClick(contentType)}
                     className="flex items-center justify-between w-full outline-none focus:outline-none"
                   >
-                    <span>{template.alias}</span>
+                    <span>{contentType.name}</span>
                     {active ? <Icons.Checkmark className="block h-6 w-6 text-green-500" /> : null}
                   </button>
                 </div>
