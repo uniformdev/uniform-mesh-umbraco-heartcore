@@ -388,24 +388,24 @@
     axios "^0.21.1"
     form-data "^2.5.1"
 
-"@uniformdev/mesh-sdk-react@14.0.1-alpha.95":
-  version "14.0.1-alpha.95"
-  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk-react/-/mesh-sdk-react-14.0.1-alpha.95.tgz#7faa43ca5f7106f8da2e01be1e33ab9d2d0623c1"
-  integrity sha512-JlzJbfZksnASmTibnIhYw/gXjPHfOszveOWjJJG6X+iz5lZbPxGyceyVj9V7qcTOKuG1QG9JZ+N9roPwO9jxtw==
+"@uniformdev/mesh-sdk-react@12.2.1-alpha.170":
+  version "12.2.1-alpha.170"
+  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk-react/-/mesh-sdk-react-12.2.1-alpha.170.tgz#f50720cea61e9faea97d2d49a014881caf6a4351"
+  integrity sha512-egABhFzCBx96QNb39blLoHyGxeZgiBYx7lAwRRx+/BgWm/wtgPLSL+xC4dKQkwsaRENU3BYZaaKo6kbpTFIdow==
   dependencies:
-    "@uniformdev/mesh-sdk" "^14.0.1-alpha.95+8da07b5d"
+    "@uniformdev/mesh-sdk" "^12.2.1-alpha.170+899ea147"
     react-beautiful-dnd "13.1.0"
     react-use "17.3.2"
     reakit "1.3.11"
     timeago.js "4.0.2"
     uuid "8.3.2"
 
-"@uniformdev/mesh-sdk@^14.0.1-alpha.95+8da07b5d":
-  version "14.0.1-alpha.95"
-  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk/-/mesh-sdk-14.0.1-alpha.95.tgz#c115d75ef1f37b09dc888dff48f2b2f084d53f69"
-  integrity sha512-vcIf0gD3KgA7uz0xqtVpAhr2RPU1ePtmd6SicAz9pGfVwpB07XSTPdj2TK4WfEpBjOAxXO4cIbOx4L3CsHExug==
+"@uniformdev/mesh-sdk@^12.2.1-alpha.170+899ea147":
+  version "12.2.1-alpha.171"
+  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk/-/mesh-sdk-12.2.1-alpha.171.tgz#214fa135b6ff478dce9f0e04608430b4cfcbee14"
+  integrity sha512-xzvpsiWtCVeMQ/nGGV0MVDwvdrfIn1gmj/1ZXA9ul62nxfGgFy0JZsogNAUdblH/Z+3+Wl3xQNxg8LFIs8fBPA==
   dependencies:
-    post-robot "10.0.44"
+    post-robot "10.0.46"
 
 "@xobotyi/scrollbar-width@^1.9.5":
   version "1.9.5"
@@ -2781,10 +2781,10 @@ platform@1.3.6:
   resolved "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz"
   integrity sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==
 
-post-robot@10.0.44:
-  version "10.0.44"
-  resolved "https://registry.npmjs.org/post-robot/-/post-robot-10.0.44.tgz"
-  integrity sha512-LbA2E7gw/MkntjFtT2EPUrapIPCN/M9orKT3OTQC9A87raT5nmsL0nsHAr1AMZS0UoZxB6Z4K6OlnTxAgxXidw==
+post-robot@10.0.46:
+  version "10.0.46"
+  resolved "https://registry.yarnpkg.com/post-robot/-/post-robot-10.0.46.tgz#39cea5b51033729390fc7c90be3285cd285f0377"
+  integrity sha512-EgVJiuvI4iRWDZvzObWes0X/n8olWBEJWxlSw79zmhpgkigX8UsVL4VOBhVtoJKwf0Y9qP9g2zOONw1rv80QbA==
   dependencies:
     belter "^1.0.41"
     cross-domain-safe-weakmap "^1.0.1"
