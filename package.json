@@ -4,7 +4,7 @@
   "version": "13.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env PORT=4000 next dev",
+    "dev": "cross-env PORT=4001 next dev",
     "build": "next build",
     "export": "next export",
     "ci:build": "next build && next export",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@umbraco/headless-client": "^0.8.2",
-    "@uniformdev/mesh-sdk-react": "12.2.1-alpha.170",
+    "@uniformdev/mesh-sdk-react": "14.1.2-alpha.87",
     "graphql": "^16.2.0",
     "graphql-request": "^3.7.0",
     "next": "12.0.7",
