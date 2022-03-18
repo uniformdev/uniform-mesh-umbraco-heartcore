@@ -86,11 +86,6 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@datadog/framepost@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@datadog/framepost/-/framepost-0.3.1.tgz#bb4910b894cfeb7d423aa60084ddd2bb3c29216e"
-  integrity sha512-MxK/stjASi0Djy5OS/teux7rfU6ffT4W3XrlFN5Xs1ZoOjZ3O+y9SOrOv9GKs+8TlL2l6UTiDWRfFUQZlrxJ1g==
-
 "@eslint/eslintrc@^1.0.5":
   version "1.0.5"
   resolved "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-1.0.5.tgz"
@@ -400,24 +395,22 @@
     axios "^0.21.1"
     form-data "^2.5.1"
 
-"@uniformdev/mesh-sdk-react@14.1.2-alpha.87":
-  version "14.1.2-alpha.87"
-  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk-react/-/mesh-sdk-react-14.1.2-alpha.87.tgz#a409d9472517aefbc74052026c091cc6cddf7fbd"
-  integrity sha512-ykadGy3Kxx9Tty4zqSg9A8RjOL8Ca35EoMm5GmhSj7dslTKUREfUWbktHK7euTYkDqf/qGi0/eziWQtE4X/+Ow==
+"@uniformdev/mesh-sdk-react@14.2.0":
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk-react/-/mesh-sdk-react-14.2.0.tgz#c7dbb74535b8690b62fde1b05aacf2e98aab4567"
+  integrity sha512-W3c1y02I08a1ynss0eoz/boJlbw8hKxxYN0jU+qRwF5dfMAILBp7Wip+rGm8sBiZO1jmVM1e2hR4iBIfS5tkpg==
   dependencies:
-    "@uniformdev/mesh-sdk" "^14.1.2-alpha.87+2a349914"
+    "@uniformdev/mesh-sdk" "^14.2.0"
     react-beautiful-dnd "13.1.0"
     react-use "17.3.2"
     reakit "1.3.11"
     timeago.js "4.0.2"
     uuid "8.3.2"
 
-"@uniformdev/mesh-sdk@^14.1.2-alpha.87+2a349914":
-  version "14.1.2-alpha.87"
-  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk/-/mesh-sdk-14.1.2-alpha.87.tgz#448ee94cff61857f02420aad86394d321169ab09"
-  integrity sha512-TwpZ/k5HrBQpVeC8ODuUG60b0N1O4NPKCBf44nR3SyVMPK9QH26yKWSkuaNtF/xH9lM2CquNAYZc+MkxKlHs5A==
-  dependencies:
-    "@datadog/framepost" "0.3.1"
+"@uniformdev/mesh-sdk@^14.2.0":
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/@uniformdev/mesh-sdk/-/mesh-sdk-14.2.0.tgz#eb9bd97aea17a64b52045a3bcc84305579cd8d0c"
+  integrity sha512-KDyvmK7Kh0Gz+TndvWYrOIQIjvb/e3pn56GoE+E4xZHC7FMOO0xw3IjLbSt5OuuEH0wlb0Ekmon95Gy+BVkn7Q==
 
 "@xobotyi/scrollbar-width@^1.9.5":
   version "1.9.5"
