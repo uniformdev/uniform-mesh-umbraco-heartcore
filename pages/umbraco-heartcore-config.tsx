@@ -1,5 +1,12 @@
 import React from 'react';
-import { Callout, LoadingIndicator, useUniformMeshLocation, Icons } from '@uniformdev/mesh-sdk-react';
+import {
+  Callout,
+  LoadingIndicator,
+  useUniformMeshLocation,
+  Icons,
+  ScrollableList,
+  ScrollableListItem,
+} from '@uniformdev/mesh-sdk-react';
 import { useAsync } from 'react-use';
 import {
   CanvasItemSelectorConfigValue,
@@ -83,12 +90,7 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
     return result as (ContentTypeBase & ContentTypeBaseGroup)[];
   }, [projectSettings]);
 
-  const handleMenuItemClick = (contentType: ContentTypeBase & ContentTypeBaseGroup) => {
-    // If the clicked content type id already exists in the provided state value,
-    // set the content type id value to 'undefined' in the stored object.
-    // This makes updating the state value less complex.
-    // note: we can't mutate `value` directly as it is read-only/frozen, so spread the existing
-    // value into a new object if it exists.
+  const handleContentTypeSelect = async (contentType:ContentTypeBase & ContentTypeBaseGroup) => {
     const allowedContentTypes = {
       ...(value || {}),
     };
@@ -96,47 +98,36 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
       ? undefined
       : { alias: contentType.alias, name: contentType.name };
 
-    setValue(allowedContentTypes);
+    await setValue(allowedContentTypes);
   };
 
   return (
-    <div className="relative">
-      <label className="uniform-input-label">Allowed ContentTypes</label>
+    <div>
       {loading ? <LoadingIndicator /> : null}
       {Array.isArray(contentTypes) ? (
-        <div
-          className="overflow-y-auto p-2 bg-gray-100 border-t border-b border-gray-300 space-y-2 max-h-96"
-          data-test-id="content-type-selector"
-        >
+        <div data-test-id="content-type-selector">
           {contentTypes.length === 0 ? (
-            <Callout type="caution">
-              No content types were found for project {projectSettings?.projectAlias}
-            </Callout>
+            <Callout type="caution">No content types were found for project {projectSettings.projectAlias}</Callout>
           ) : (
-            contentTypes.map((contentType, index) => {
-              const active = Boolean(value ? value[contentType.alias] : false);
-              return (
-                <div
-                  key={index}
-                  className={`flex items-center space-x-2 p-3 bg-white border-2 rounded-md shadow-md ${
-                    active ? 'border-green-500' : 'border-gray-300'
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleMenuItemClick(contentType)}
-                    className="flex items-center justify-between w-full outline-none focus:outline-none"
-                  >
-                    <span>{contentType.name}</span>
-                    {active ? <Icons.Checkmark className="block h-6 w-6 text-green-500" /> : null}
-                  </button>
-                </div>
-              );
-            })
+            <ScrollableList label="Allowed Content Types">
+              {contentTypes.map((item) => {
+                const isActive = Boolean(value ? value[item.alias] : false);
+
+                return (
+                  <div key={item.alias} className="mb-2">
+                    <ScrollableListItem
+                      buttonText={item.name}
+                      active={isActive}
+                      onClick={() => handleContentTypeSelect(item)}
+                    />
+                  </div>
+                );
+              })}
+            </ScrollableList>
           )}
         </div>
       ) : null}
       {error ? <Callout type="error">{error.message}</Callout> : null}
     </div>
   );
-}
+};

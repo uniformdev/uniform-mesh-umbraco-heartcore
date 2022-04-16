@@ -10,9 +10,9 @@ import {
 } from '../types/types';
 import {
   Callout,
-  CmsEntrySearch,
-  CmsEntrySearchContentType,
-  CmsEntrySearchResult,
+  EntrySearch,
+  EntrySearchContentType,
+  EntrySearchResult,
   useUniformMeshLocation,
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync, useAsyncFn, useMountedState } from 'react-use';
@@ -100,12 +100,12 @@ function ItemSearch({
   const contentTypeOptions = allowedContentTypes
     ? Object.values(allowedContentTypes)
         ?.filter((contentType) => Boolean(contentType))
-        ?.map<CmsEntrySearchContentType>((contentType) => ({
+        ?.map<EntrySearchContentType>((contentType) => ({
           id: contentType!.alias,
           name: contentType!.name,
         }))
     : undefined;
-  console.log('contentTypeOptions', contentTypeOptions);
+    
   const handleSelect = async (ids: string[]) => {
     await setValue({
       id: ids[0],
@@ -122,7 +122,7 @@ function ItemSearch({
   }
 
   return (
-    <CmsEntrySearch
+    <EntrySearch
       contentTypes={contentTypeOptions}
       search={handleSearch}
       results={searchState.value}
@@ -142,7 +142,7 @@ function convertItemToSearchResultFn({
 }: {
   item: ContentItem;
   selectedContentType: ContentType | undefined;
-}): CmsEntrySearchResult {
+}): EntrySearchResult {
   return {
     id: item.id,
     title: item.name,
@@ -289,7 +289,7 @@ function useSearchItems({
             selectedContentType,
           })
         );
-        return mappedResults as CmsEntrySearchResult[];
+        return mappedResults as EntrySearchResult[];
       }
       return undefined;
     },
