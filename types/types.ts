@@ -1,6 +1,6 @@
 export interface ContentType {
   alias: string;
-  name: string
+  name: string;
 }
 export type ContentTypeMap = {
   [key: string]: ContentType | undefined;
@@ -8,9 +8,9 @@ export type ContentTypeMap = {
 
 export type CanvasItemSelectorConfigValue =
   | {
-    allowedContentTypes?: ContentTypeMap;
-    source?: LinkedSource['id'];
-  }
+      allowedContentTypes?: ContentTypeMap;
+      source?: LinkedSource['id'];
+    }
   | undefined;
 
 export interface ConfigValue {
@@ -54,10 +54,10 @@ export interface LinkedSource {
   project: ProjectSettings;
 }
 export interface ContentItem {
-  contentTypeAlias: string,
-  createDate: string,
-  id: string,
-  name: string,
-  updateDate: string,
-  currentVersionState: string
+  contentTypeAlias: string;
+  createDate: string;
+  id: string;
+  name: string;
+  updateDate: string;
+  currentVersionState: string;
 }

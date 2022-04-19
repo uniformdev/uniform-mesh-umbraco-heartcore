@@ -17,7 +17,7 @@ import {
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync, useAsyncFn, useMountedState } from 'react-use';
 import { format as timeAgo } from 'timeago.js';
-import LogoIcon from '../public/heartcore.png';
+import LogoIcon from '../public/heartcore-badge.png';
 import { getGraphQLClient } from '../lib/getGraphQLClient';
 import { getContentManagementClient } from '../lib/getContentManagementClient';
 import { gql } from 'graphql-request';
@@ -86,7 +86,7 @@ function ItemSearch({
 
   const { error: selectedItemsError, selectedItems } = useSelectedItems({
     convertItemToSearchResult: convertItemToSearchResultFn,
-    itemIds: [value?.id!],
+    itemIds: value?.id ? [value.id] : undefined,
     projectSettings: linkedSource.project,
     allowedContentTypes,
   });
@@ -105,7 +105,7 @@ function ItemSearch({
           name: contentType!.name,
         }))
     : undefined;
-    
+
   const handleSelect = async (ids: string[]) => {
     await setValue({
       id: ids[0],

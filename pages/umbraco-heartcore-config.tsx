@@ -3,7 +3,6 @@ import {
   Callout,
   LoadingIndicator,
   useUniformMeshLocation,
-  Icons,
   ScrollableList,
   ScrollableListItem,
 } from '@uniformdev/mesh-sdk-react';
@@ -26,12 +25,12 @@ export default function HeartcoreConfig() {
     metadata,
   } = useUniformMeshLocation<CanvasItemSelectorConfigValue, CanvasItemSelectorConfigMetadataValue>();
 
-  const handleAllowedContentTypesSetValue = (allowedContentTypes: ContentTypeMap | undefined) => {
-    setConfig({ ...config, allowedContentTypes });
+  const handleAllowedContentTypesSetValue = async (allowedContentTypes: ContentTypeMap | undefined) => {
+    await setConfig({ ...config, allowedContentTypes });
   };
 
-  const handleLinkedSourceSelect = (value: LinkedSource) => {
-    setConfig({
+  const handleLinkedSourceSelect = async (value: LinkedSource) => {
+    await setConfig({
       ...config,
       source: value.id,
     });
@@ -61,13 +60,18 @@ export default function HeartcoreConfig() {
           setValue={handleAllowedContentTypesSetValue}
           value={config.allowedContentTypes}
         />
-      ) : null}
+      ) : (
+        <Callout type="error">
+          It appears the Heartcore integration is not configured. Please visit the &quot;Settings &gt;
+          Heartcore&quot; page to provide information for connecting to Heartcore.
+        </Callout>
+      )}
     </>
   );
 }
 
 interface ContentTypeSelectorProps {
-  setValue: (value: ContentTypeMap) => void;
+  setValue: (value: ContentTypeMap) => Promise<void>;
   value: ContentTypeMap | undefined;
   projectSettings: ProjectSettings;
 }
@@ -90,7 +94,7 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
     return result as (ContentTypeBase & ContentTypeBaseGroup)[];
   }, [projectSettings]);
 
-  const handleContentTypeSelect = async (contentType:ContentTypeBase & ContentTypeBaseGroup) => {
+  const handleContentTypeSelect = async (contentType: ContentTypeBase & ContentTypeBaseGroup) => {
     const allowedContentTypes = {
       ...(value || {}),
     };
@@ -107,7 +111,9 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
       {Array.isArray(contentTypes) ? (
         <div data-test-id="content-type-selector">
           {contentTypes.length === 0 ? (
-            <Callout type="caution">No content types were found for project {projectSettings.projectAlias}</Callout>
+            <Callout type="caution">
+              No content types were found for project {projectSettings.projectAlias}
+            </Callout>
           ) : (
             <ScrollableList label="Allowed Content Types">
               {contentTypes.map((item) => {
@@ -130,4 +136,4 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
       {error ? <Callout type="error">{error.message}</Callout> : null}
     </div>
   );
-};
+}

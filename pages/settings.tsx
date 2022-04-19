@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useUniformMeshLocation, Input, Button, Callout, LoadingOverlay } from '@uniformdev/mesh-sdk-react';
+import {
+  useUniformMeshLocation,
+  Input,
+  Button,
+  Callout,
+  LoadingOverlay,
+  Heading,
+} from '@uniformdev/mesh-sdk-react';
 import { ProjectSettings, SettingsValue } from '../types/types';
 
 export default function Settings() {
@@ -18,7 +25,7 @@ export default function Settings() {
 
   return (
     <>
-      <h3 className="main-heading">Heartcore settings</h3>
+      <Heading level={2}>Heartcore settings</Heading>
       <SettingsInner settings={value?.linkedSources?.[0].project} onSettingsChange={handleSettingsChange} />
     </>
   );
@@ -99,14 +106,17 @@ const SettingsInner = ({
       <LoadingOverlay isActive={formState.isSubmitting} />
       {error ? <Callout type="error">{error.message}</Callout> : null}
       {formState.saveSuccess ? <Callout type="success">Settings were saved successfully</Callout> : null}
-
-      <Input
-        name="projectAlias"
-        label="Project Alias"
-        onChange={handleInputChange}
-        value={formState.projectAlias}
-      />
-      <Input name="apiKey" label="API Key" onChange={handleInputChange} value={formState.apiKey} />
+      <div>
+        <Input
+          name="projectAlias"
+          label="Project Alias"
+          onChange={handleInputChange}
+          value={formState.projectAlias}
+        />
+      </div>
+      <div>
+        <Input name="apiKey" label="API Key" onChange={handleInputChange} value={formState.apiKey} />
+      </div>
       <Button type="submit" buttonType="secondary" disabled={formState.isSubmitting} onClick={handleSubmit}>
         Save
       </Button>
