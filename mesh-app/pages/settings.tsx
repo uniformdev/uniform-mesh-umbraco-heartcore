@@ -13,14 +13,29 @@ export default function Settings() {
   const { value, setValue } = useUniformMeshLocation<SettingsValue>();
 
   const handleSettingsChange = async (settings: ProjectSettings) => {
-    await setValue({
-      linkedSources: [
-        {
-          id: 'default',
-          project: settings,
-        },
-      ],
+    const valid = await validateApiConnection({
+      apiKey: settings.apiKey,
+      projectAlias: settings.projectAlias,
     });
+
+    if (!valid.contentManagementValid) {
+      throw new Error(
+        'It appears that the provided settings are not able to access the Umbraco Heartcore Content Management API. Please check the settings and try again.'
+      );
+    } else if (!valid.graphQLValid) {
+      throw new Error(
+        'It appears that the provided settings are not able to access the Umbraco Heartcore GraphQL API. Please ensure that the project you are trying to connect to has GraphQL API access included or check the settings and try again.'
+      );
+    } else {
+      await setValue({
+        linkedSources: [
+          {
+            id: 'default',
+            project: settings,
+          },
+        ],
+      });
+    }
   };
 
   return (
@@ -59,6 +74,7 @@ const SettingsInner = ({
   }, [settings]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(undefined);
     setFormState((prev) => {
       return {
         ...prev,
@@ -74,6 +90,7 @@ const SettingsInner = ({
       return;
     }
 
+    setError(undefined);
     setFormState((prev) => ({
       ...prev,
       isSubmitting: true,
@@ -123,3 +140,48 @@ const SettingsInner = ({
     </div>
   );
 };
+
+async function validateApiConnection({ apiKey, projectAlias }: { apiKey: string; projectAlias: string }) {
+  const [contentManagementResponse, graphQLResponse] = await Promise.all([
+    fetch('https://api.umbraco.io', {
+      headers: { 'Api-Key': apiKey, 'Umb-Project-Alias': projectAlias },
+      method: 'GET',
+    }),
+
+    // We don't need a GraphQL client to make a test request to the GraphQL endpoint,
+    // a simple POST will suffice.
+    fetch('https://graphql.umbraco.io', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Key': apiKey,
+        'Umb-Project-Alias': projectAlias,
+      },
+      method: 'POST',
+    }),
+  ]);
+
+  const result = {
+    contentManagementValid: true,
+    graphQLValid: true,
+  };
+
+  if (!contentManagementResponse.ok) {
+    result.contentManagementValid = false;
+  }
+
+  if (graphQLResponse.ok) {
+    const json = await graphQLResponse.json();
+    if (Array.isArray(json['errors'])) {
+      json['errors'].forEach((err) => {
+        const message = err.message?.toLowerCase();
+        if (message?.includes('does not have graphql') || message?.includes('permission denied')) {
+          result.graphQLValid = false;
+        }
+      });
+    }
+  } else {
+    result.graphQLValid = false;
+  }
+
+  return result;
+}

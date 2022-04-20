@@ -226,11 +226,8 @@ function useGetItemsById({
       return;
     }
 
-    const itemsPromises = [];
     const client = getContentManagementClient(projectSettings);
-    for (const id of itemIds) {
-      if (id) itemsPromises.push(await client.management.content.byId(id));
-    }
+    const itemsPromises = itemIds.map((id) => client.management.content.byId(id));
 
     const items = await Promise.all(itemsPromises);
     return items as ContentManagementContent[];
@@ -288,7 +285,9 @@ function useSearchItems({
       const result = await gqclient.request(queryAllByType, variables);
       const items = result.allContent.items;
 
-      if (items) {
+      // If the query returns items, the `items` variable will be an empty array, in
+      // which case we want to return undefined.
+      if (Array.isArray(items) && items.length > 0) {
         const mappedResults = items.map((item: any) =>
           convertItemToSearchResult({
             item,
