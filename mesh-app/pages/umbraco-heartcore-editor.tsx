@@ -51,14 +51,18 @@ export default function HeartcoreEditor() {
   // If neither are defined, we can't render the search component and show a message instead.
   const sourceId = value?.source || metadata.parameterConfiguration?.source || 'default';
   const resolvedLinkedSource = metadata.settings.linkedSources?.find((ls) => ls.id === sourceId);
-  if (resolvedLinkedSource) {
+  if (resolvedLinkedSource?.project?.apiKey) {
     return (
-      <ItemSearch
-        linkedSource={resolvedLinkedSource}
-        allowedContentTypes={metadata.parameterConfiguration?.allowedContentTypes}
-        value={value}
-        setValue={setValue}
-      />
+      <>
+        <label className="flex items-center font-bold">{metadata.parameterDefinition.name}</label>
+        <ItemSearch
+          linkedSource={resolvedLinkedSource}
+          allowedContentTypes={metadata.parameterConfiguration?.allowedContentTypes}
+          value={value}
+          setValue={setValue}
+          multiselect={metadata.parameterConfiguration?.allowMultiselect}
+        />
+      </>
     );
   }
 
@@ -70,11 +74,13 @@ function ItemSearch({
   allowedContentTypes,
   value,
   setValue,
+  multiselect,
 }: {
   linkedSource: LinkedSource;
   allowedContentTypes: ContentTypeMap | undefined;
   value: CanvasItemSelectorEditorValue | undefined;
   setValue: (value: CanvasItemSelectorEditorValue) => Promise<void>;
+  multiselect?: boolean;
 }) {
   const isMounted = useMountedState();
 
@@ -86,7 +92,7 @@ function ItemSearch({
 
   const { error: selectedItemsError, selectedItems } = useSelectedItems({
     convertItemToSearchResult: convertItemToSearchResultFn,
-    itemIds: value?.id ? [value.id] : undefined,
+    itemIds: value?.ids,
     projectSettings: linkedSource.project,
     allowedContentTypes,
   });
@@ -108,7 +114,7 @@ function ItemSearch({
 
   const handleSelect = async (ids: string[]) => {
     await setValue({
-      id: ids[0],
+      ids,
       source: linkedSource.id,
     });
   };
@@ -127,7 +133,7 @@ function ItemSearch({
       search={handleSearch}
       results={searchState.value}
       logoIcon={LogoIcon.src}
-      //multiSelect={true}
+      multiSelect={multiselect}
       selectedItems={selectedItems}
       select={handleSelect}
       requireContentType={true}

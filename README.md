@@ -44,3 +44,23 @@ Use the following location configuration to create a private integration:
   }
 }
 ```
+
+## Sample App (`/sample-app`)
+
+### Development
+
+A sample Uniform Canvas app with a Umbraco Heartcore enhancer can be found in `sample-app/`.
+
+Copy `.env.example` to `.env` and set env variables to hold details of your Uniform and Umbraco Heartcore projects.
+
+To run the app:
+
+```
+cd sample-app
+npm i
+npm run dev
+```
+
+### Enhancer
+
+`lib/enhancers.ts` exports a Umbraco Heartcore enhancer.
