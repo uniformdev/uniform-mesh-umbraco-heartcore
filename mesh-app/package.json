@@ -3,7 +3,7 @@
   "description": "Uniform Mesh app for Umbraco Heartcore",
   "version": "14.0.0",
   "scripts": {
-    "dev": "cross-env PORT=4001 next dev",
+    "dev": "cross-env PORT=4030 next dev",
     "build": "next build",
     "export": "next export",
     "ci:build": "next build && next export",

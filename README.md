@@ -20,7 +20,7 @@ Use the following location configuration to create a private integration:
 
 ```
 {
-  "baseLocationUrl": "http://localhost:4001",
+  "baseLocationUrl": "http://localhost:4030",
   "locations": {
     "canvas": {
       "parameterTypes": [

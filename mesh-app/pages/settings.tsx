@@ -25,7 +25,7 @@ export default function Settings() {
 
   return (
     <>
-      <Heading level={2}>Heartcore settings</Heading>
+      <Heading level={2}>Umbraco Heartcore settings</Heading>
       <SettingsInner settings={value?.linkedSources?.[0].project} onSettingsChange={handleSettingsChange} />
     </>
   );

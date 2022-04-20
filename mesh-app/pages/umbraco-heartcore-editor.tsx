@@ -17,7 +17,7 @@ import {
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync, useAsyncFn, useMountedState } from 'react-use';
 import { format as timeAgo } from 'timeago.js';
-import LogoIcon from '../public/heartcore-badge.png';
+import LogoIcon from '../public/umbraco-badge.png';
 import { getGraphQLClient } from '../lib/getGraphQLClient';
 import { getContentManagementClient } from '../lib/getContentManagementClient';
 import { gql } from 'graphql-request';
