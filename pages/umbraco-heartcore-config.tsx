@@ -5,6 +5,7 @@ import {
   useUniformMeshLocation,
   ScrollableList,
   ScrollableListItem,
+  InputToggle,
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync } from 'react-use';
 import {
@@ -36,6 +37,10 @@ export default function HeartcoreConfig() {
     });
   };
 
+  const toggleAllowMultiselect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await setConfig({ ...config, allowMultiselect: e.target.checked });
+  };
+
   const selectedLinkedSource = metadata.settings.linkedSources?.find((ls) => ls.id === config?.source);
   const projectSettings = selectedLinkedSource?.project;
 
@@ -54,12 +59,21 @@ export default function HeartcoreConfig() {
         />
       )}
 
-      {config?.source && projectSettings ? (
-        <ContentTypeSelector
-          projectSettings={projectSettings}
-          setValue={handleAllowedContentTypesSetValue}
-          value={config.allowedContentTypes}
-        />
+      {config?.source && projectSettings?.apiKey ? (
+        <>
+          <ContentTypeSelector
+            projectSettings={projectSettings}
+            setValue={handleAllowedContentTypesSetValue}
+            value={config.allowedContentTypes}
+          />
+          <InputToggle
+            label="Allow multi-selection"
+            name="allowMultiSelection"
+            type="checkbox"
+            onChange={toggleAllowMultiselect}
+            checked={config?.allowMultiselect}
+          />
+        </>
       ) : (
         <Callout type="error">
           It appears the Heartcore integration is not configured. Please visit the &quot;Settings &gt;

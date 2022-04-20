@@ -10,6 +10,7 @@ export type CanvasItemSelectorConfigValue =
   | {
       allowedContentTypes?: ContentTypeMap;
       source?: LinkedSource['id'];
+      allowMultiselect?: boolean;
     }
   | undefined;
 
@@ -35,7 +36,7 @@ export interface CanvasItemSelectorConfigMetadataValue {
 
 export interface CanvasItemSelectorEditorValue {
   source: string | undefined;
-  id: string;
+  ids: string[];
 }
 
 export interface CanvasItemSelectorEditorMetadataValue {
@@ -43,6 +44,9 @@ export interface CanvasItemSelectorEditorMetadataValue {
   settings: SettingsValue;
   /** Uniform project id */
   projectId: string;
+  parameterDefinition: {
+    name: string;
+  };
 }
 
 export interface SettingsValue {
