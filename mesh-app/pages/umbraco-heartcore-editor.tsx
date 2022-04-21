@@ -112,9 +112,9 @@ function ItemSearch({
         }))
     : undefined;
 
-  const handleSelect = async (ids: string[]) => {
+  const handleSelect = async (items: EntrySearchResult[]) => {
     await setValue({
-      ids,
+      ids: items.map((item) => item.id),
       source: linkedSource.id,
     });
   };
