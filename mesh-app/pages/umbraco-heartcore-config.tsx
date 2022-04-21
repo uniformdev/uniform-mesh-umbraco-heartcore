@@ -26,8 +26,18 @@ export default function HeartcoreConfig() {
     metadata,
   } = useUniformMeshLocation<CanvasItemSelectorConfigValue, CanvasItemSelectorConfigMetadataValue>();
 
-  const handleAllowedContentTypesSetValue = async (allowedContentTypes: ContentTypeMap | undefined) => {
-    await setConfig({ ...config, allowedContentTypes });
+  const handleContentTypeSelectorSetValue = async ({
+    allowMultiselect,
+    allowedContentTypes,
+  }: {
+    allowedContentTypes: ContentTypeMap | undefined;
+    allowMultiselect: boolean | undefined;
+  }) => {
+    await setConfig({
+      ...config,
+      allowedContentTypes,
+      allowMultiselect,
+    });
   };
 
   const handleLinkedSourceSelect = async (value: LinkedSource) => {
@@ -35,10 +45,6 @@ export default function HeartcoreConfig() {
       ...config,
       source: value.id,
     });
-  };
-
-  const toggleAllowMultiselect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await setConfig({ ...config, allowMultiselect: e.target.checked });
   };
 
   const selectedLinkedSource = metadata.settings.linkedSources?.find((ls) => ls.id === config?.source);
@@ -63,15 +69,11 @@ export default function HeartcoreConfig() {
         <>
           <ContentTypeSelector
             projectSettings={projectSettings}
-            setValue={handleAllowedContentTypesSetValue}
-            value={config.allowedContentTypes}
-          />
-          <InputToggle
-            label="Allow multi-selection"
-            name="allowMultiSelection"
-            type="checkbox"
-            onChange={toggleAllowMultiselect}
-            checked={config?.allowMultiselect}
+            setValue={handleContentTypeSelectorSetValue}
+            value={{
+              allowedContentTypes: config?.allowedContentTypes,
+              allowMultiselect: config?.allowMultiselect,
+            }}
           />
         </>
       ) : (
@@ -85,8 +87,11 @@ export default function HeartcoreConfig() {
 }
 
 interface ContentTypeSelectorProps {
-  setValue: (value: ContentTypeMap) => Promise<void>;
-  value: ContentTypeMap | undefined;
+  setValue: (value: {
+    allowedContentTypes: ContentTypeMap | undefined;
+    allowMultiselect: boolean | undefined;
+  }) => Promise<void>;
+  value: { allowedContentTypes: ContentTypeMap | undefined; allowMultiselect: boolean | undefined };
   projectSettings: ProjectSettings;
 }
 
@@ -104,19 +109,29 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
     const client = getContentManagementClient(projectSettings);
 
     const result = await client.management.contentType.all();
+    // If no content types have been created in the project, the api response will
+    // be an object with an irrelevant `_links` property, not an empty array like
+    // the client typings would suggest.
+    if (!Array.isArray(result)) {
+      return [];
+    }
 
     return result as (ContentTypeBase & ContentTypeBaseGroup)[];
   }, [projectSettings]);
 
   const handleContentTypeSelect = async (contentType: ContentTypeBase & ContentTypeBaseGroup) => {
     const allowedContentTypes = {
-      ...(value || {}),
+      ...(value.allowedContentTypes || {}),
     };
     allowedContentTypes[contentType.alias] = allowedContentTypes[contentType.alias]
       ? undefined
       : { alias: contentType.alias, name: contentType.name };
 
-    await setValue(allowedContentTypes);
+    await setValue({ allowedContentTypes, allowMultiselect: value.allowMultiselect });
+  };
+
+  const toggleAllowMultiselect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await setValue({ allowMultiselect: e.target.checked, allowedContentTypes: value.allowedContentTypes });
   };
 
   return (
@@ -129,21 +144,32 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
               No content types were found for project {projectSettings.projectAlias}
             </Callout>
           ) : (
-            <ScrollableList label="Allowed Content Types">
-              {contentTypes.map((item) => {
-                const isActive = Boolean(value ? value[item.alias] : false);
+            <div className="space-y-2">
+              <ScrollableList label="Allowed Content Types">
+                {contentTypes.map((item) => {
+                  const isActive = Boolean(
+                    value.allowedContentTypes ? value.allowedContentTypes[item.alias] : false
+                  );
 
-                return (
-                  <div key={item.alias} className="mb-2">
-                    <ScrollableListItem
-                      buttonText={item.name}
-                      active={isActive}
-                      onClick={() => handleContentTypeSelect(item)}
-                    />
-                  </div>
-                );
-              })}
-            </ScrollableList>
+                  return (
+                    <div key={item.alias} className="mb-2">
+                      <ScrollableListItem
+                        buttonText={item.name}
+                        active={isActive}
+                        onClick={() => handleContentTypeSelect(item)}
+                      />
+                    </div>
+                  );
+                })}
+              </ScrollableList>
+              <InputToggle
+                label="Allow multi-selection"
+                name="allowMultiSelection"
+                type="checkbox"
+                onChange={toggleAllowMultiselect}
+                checked={value.allowMultiselect}
+              />
+            </div>
           )}
         </div>
       ) : null}

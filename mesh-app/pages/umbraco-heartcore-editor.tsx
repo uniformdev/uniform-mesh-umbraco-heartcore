@@ -17,7 +17,7 @@ import {
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync, useAsyncFn, useMountedState } from 'react-use';
 import { format as timeAgo } from 'timeago.js';
-import LogoIcon from '../public/heartcore-badge.png';
+import LogoIcon from '../public/umbraco-badge.png';
 import { getGraphQLClient } from '../lib/getGraphQLClient';
 import { getContentManagementClient } from '../lib/getContentManagementClient';
 import { gql } from 'graphql-request';
@@ -112,9 +112,9 @@ function ItemSearch({
         }))
     : undefined;
 
-  const handleSelect = async (ids: string[]) => {
+  const handleSelect = async (items: EntrySearchResult[]) => {
     await setValue({
-      ids,
+      ids: items.map((item) => item.id),
       source: linkedSource.id,
     });
   };
@@ -226,11 +226,8 @@ function useGetItemsById({
       return;
     }
 
-    const itemsPromises = [];
     const client = getContentManagementClient(projectSettings);
-    for (const id of itemIds) {
-      if (id) itemsPromises.push(await client.management.content.byId(id));
-    }
+    const itemsPromises = itemIds.map((id) => client.management.content.byId(id));
 
     const items = await Promise.all(itemsPromises);
     return items as ContentManagementContent[];
@@ -288,7 +285,9 @@ function useSearchItems({
       const result = await gqclient.request(queryAllByType, variables);
       const items = result.allContent.items;
 
-      if (items) {
+      // If the query returns items, the `items` variable will be an empty array, in
+      // which case we want to return undefined.
+      if (Array.isArray(items) && items.length > 0) {
         const mappedResults = items.map((item: any) =>
           convertItemToSearchResult({
             item,

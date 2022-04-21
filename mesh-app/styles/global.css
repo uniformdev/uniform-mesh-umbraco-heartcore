@@ -1,5 +1,9 @@
-.space-y-4> :not(:last-child) {
+.space-y-4 > :not(:last-child) {
   margin-bottom: var(--spacing-base);
+}
+
+.space-y-2 > :not(:last-child) {
+  margin-bottom: var(--spacing-md);
 }
 
 .mt-4 {
@@ -8,4 +12,16 @@
 
 .relative {
   position: relative;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.font-bold {
+  font-weight: var(--fw-bold);
 }
