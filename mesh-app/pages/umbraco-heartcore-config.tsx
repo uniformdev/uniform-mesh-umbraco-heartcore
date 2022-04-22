@@ -152,13 +152,12 @@ function ContentTypeSelector({ projectSettings, value, setValue }: ContentTypeSe
                   );
 
                   return (
-                    <div key={item.alias} className="mb-2">
-                      <ScrollableListItem
-                        buttonText={item.name}
-                        active={isActive}
-                        onClick={() => handleContentTypeSelect(item)}
-                      />
-                    </div>
+                    <ScrollableListItem
+                      buttonText={item.name}
+                      active={isActive}
+                      onClick={() => handleContentTypeSelect(item)}
+                      key={item.alias}
+                    />
                   );
                 })}
               </ScrollableList>
