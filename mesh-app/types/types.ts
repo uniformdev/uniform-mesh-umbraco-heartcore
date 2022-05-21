@@ -11,6 +11,7 @@ export type CanvasItemSelectorConfigValue =
       allowedContentTypes?: ContentTypeMap;
       source?: LinkedSource['id'];
       allowMultiselect?: boolean;
+      required?: boolean;
     }
   | undefined;
 
