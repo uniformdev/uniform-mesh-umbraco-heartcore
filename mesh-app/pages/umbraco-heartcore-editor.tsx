@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   CanvasItemSelectorEditorMetadataValue,
   CanvasItemSelectorEditorValue,
@@ -14,6 +14,7 @@ import {
   EntrySearchContentType,
   EntrySearchResult,
   useUniformMeshLocation,
+  ValidationResult,
 } from '@uniformdev/mesh-sdk-react';
 import { useAsync, useAsyncFn, useMountedState } from 'react-use';
 import { format as timeAgo } from 'timeago.js';
@@ -38,11 +39,46 @@ const queryAllByType = gql`
   }
 `;
 
+function validate(value: CanvasItemSelectorEditorValue | undefined, parameterName: string): ValidationResult {
+  if (!value || !value.source || !Array.isArray(value.ids) || value.ids.length === 0) {
+    return {
+      isValid: false,
+      validationMessage: `${parameterName}: At least one Umbraco item must be selected.`,
+    };
+  }
+  return {
+    isValid: true,
+  };
+}
+
 export default function HeartcoreEditor() {
-  const { value, setValue, metadata } = useUniformMeshLocation<
+  const { value, setValue, metadata, setValidationResult } = useUniformMeshLocation<
     CanvasItemSelectorEditorValue | undefined,
     CanvasItemSelectorEditorMetadataValue
   >();
+
+  useEffect(
+    () => {
+      if (metadata.parameterConfiguration?.required) {
+        const runEffect = async () => {
+          await setValidationResult(validate(value, metadata.parameterDefinition.name));
+        };
+        runEffect();
+      }
+    },
+    // we only want to run this effect on initial render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const handleSetValue = async (newValue: CanvasItemSelectorEditorValue | undefined) => {
+    await setValue(
+      newValue,
+      metadata.parameterConfiguration?.required
+        ? validate(newValue, metadata.parameterDefinition.name)
+        : undefined
+    );
+  };
 
   // Parameter value stores the linked source id within the parameter value.
   // But the parameter config may (or may not) also have a linked environment configured.
@@ -59,7 +95,7 @@ export default function HeartcoreEditor() {
           linkedSource={resolvedLinkedSource}
           allowedContentTypes={metadata.parameterConfiguration?.allowedContentTypes}
           value={value}
-          setValue={setValue}
+          setValue={handleSetValue}
           multiselect={metadata.parameterConfiguration?.allowMultiselect}
         />
       </>
