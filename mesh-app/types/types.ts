@@ -26,6 +26,7 @@ export interface EditorMetadataValue {
 export interface ProjectSettings {
   projectAlias: string;
   apiKey: string;
+  server?: string; // required for creating edit link only
 }
 
 export interface CanvasItemSelectorConfigMetadataValue {

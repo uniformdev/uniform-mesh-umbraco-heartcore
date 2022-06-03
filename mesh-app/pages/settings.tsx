@@ -58,6 +58,7 @@ const SettingsInner = ({
   const [formState, setFormState] = useState<FormState>({
     apiKey: '',
     projectAlias: '',
+    server: '',
     isSubmitting: false,
     saveSuccess: false,
   });
@@ -69,6 +70,7 @@ const SettingsInner = ({
         ...prev,
         apiKey: settings?.apiKey || '',
         projectAlias: settings?.projectAlias || '',
+        server: settings?.server || '',
       };
     });
   }, [settings]);
@@ -101,6 +103,7 @@ const SettingsInner = ({
       await onSettingsChange({
         apiKey: formState.apiKey!,
         projectAlias: formState.projectAlias!,
+        server: formState.server,
       });
 
       setFormState((prev) => ({
@@ -133,6 +136,12 @@ const SettingsInner = ({
       </div>
       <div>
         <Input name="apiKey" label="API Key" onChange={handleInputChange} value={formState.apiKey} />
+      </div>
+      <div>
+        <Input name="server" label="Server" onChange={handleInputChange} value={formState.server} />
+        <small>
+          Optional, is used for building edit link, example: euwest01
+        </small>
       </div>
       <Button type="submit" buttonType="secondary" disabled={formState.isSubmitting} onClick={handleSubmit}>
         Save

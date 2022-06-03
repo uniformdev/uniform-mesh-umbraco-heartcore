@@ -145,11 +145,13 @@ function ItemSearch({
 function convertItemToSearchResultFn({
   item,
   selectedContentType,
+  projectSettings,
 }: {
   item: ContentItem;
   selectedContentType: ContentType | undefined;
+  projectSettings: ProjectSettings;
 }): EntrySearchResult {
-  return {
+  const result = {
     id: item.id,
     title: item.name,
     metadata: {
@@ -158,7 +160,11 @@ function convertItemToSearchResultFn({
       Updated: <span>{timeAgo(item.updateDate)}</span>,
       State: item.currentVersionState,
     },
-  };
+  } as EntrySearchResult;
+  if (projectSettings.server) { // server is optional
+    result.editLink = `https://${projectSettings.projectAlias}.${projectSettings.server}.umbraco.io/umbraco/#/content/content/edit/${item.id}`;
+  }
+  return result;
 }
 
 function useSelectedItems({
@@ -201,7 +207,7 @@ function useSelectedItems({
         contentTypeAlias: obj.contentTypeAlias,
         currentVersionState: obj._currentVersionState.$invariant,
       } as ContentItem;
-      return convertItemToSearchResult({ item, selectedContentType: resolvedContentType });
+      return convertItemToSearchResult({ item, selectedContentType: resolvedContentType, projectSettings });
     });
 
     return results;
@@ -292,6 +298,7 @@ function useSearchItems({
           convertItemToSearchResult({
             item,
             selectedContentType,
+            projectSettings,
           })
         );
         return mappedResults as EntrySearchResult[];
