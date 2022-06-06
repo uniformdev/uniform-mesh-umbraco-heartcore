@@ -59,12 +59,13 @@ export default function HeartcoreEditor() {
 
   useEffect(
     () => {
-      if (metadata.parameterConfiguration?.required) {
-        const runEffect = async () => {
-          await setValidationResult(validate(value, metadata.parameterDefinition.name));
-        };
-        runEffect();
-      }
+      const runEffect = async () => {
+        const result: ValidationResult = metadata.parameterConfiguration?.required
+          ? validate(value, metadata.parameterDefinition.name)
+          : { isValid: true };
+        await setValidationResult(result);
+      };
+      runEffect();
     },
     // we only want to run this effect on initial render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,7 +198,8 @@ function convertItemToSearchResultFn({
       State: item.currentVersionState,
     },
   } as EntrySearchResult;
-  if (projectSettings.server) { // server is optional
+  if (projectSettings.server) {
+    // server is optional
     result.editLink = `https://${projectSettings.projectAlias}.${projectSettings.server}.umbraco.io/umbraco/#/content/content/edit/${item.id}`;
   }
   return result;
