@@ -1,6 +1,0 @@
-{
-  "npm.packageManager": "npm",
-  "typescript.tsdk": "./node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "files.eol": "\n"
-}

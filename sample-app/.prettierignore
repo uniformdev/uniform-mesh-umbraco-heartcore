@@ -1,9 +1,0 @@
-package.json
-tsconfig.json
-readme.md
-node_modules
-.next
-package-lock.json
-public
-build
-out

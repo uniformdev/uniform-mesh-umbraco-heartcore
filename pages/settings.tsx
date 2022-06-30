@@ -139,9 +139,7 @@ const SettingsInner = ({
       </div>
       <div>
         <Input name="server" label="Server" onChange={handleInputChange} value={formState.server} />
-        <small>
-          Optional, is used for building edit link, example: euwest01
-        </small>
+        <small>Optional, is used for building edit link, example: euwest01</small>
       </div>
       <Button type="submit" buttonType="secondary" disabled={formState.isSubmitting} onClick={handleSubmit}>
         Save
