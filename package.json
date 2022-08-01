@@ -1,7 +1,7 @@
 {
   "name": "@uniformdev/mesh-app-umbraco-heartcore",
   "description": "Uniform Mesh app for Umbraco Heartcore",
-  "version": "16.2.0",
+  "version": "17.0.0",
   "scripts": {
     "dev": "cross-env PORT=4030 next dev",
     "build": "next build",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@umbraco/headless-client": "0.8.2",
-    "@uniformdev/mesh-sdk-react": "16.2.0",
+    "@uniformdev/mesh-sdk-react": "17.0.0",
     "graphql": "16.2.0",
     "graphql-request": "3.7.0",
     "next": "12.1.5",
